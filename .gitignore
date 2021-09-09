@@ -102,3 +102,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# nv profilers
+*.sqlite
+*.qdrep
+*~
+.data/
+output/

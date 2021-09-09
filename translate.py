@@ -9,7 +9,10 @@ import transformer.Constants as Constants
 from torchtext.data import Dataset
 from transformer.Models import Transformer
 from transformer.Translator import Translator
-
+from CSP.summary import summary
+from CSP.prune import prune
+from CSP.pruned_layers import *
+from train import replace_with_pruned
 
 def load_model(opt, device):
 
@@ -34,6 +37,8 @@ def load_model(opt, device):
         n_head=model_opt.n_head,
         dropout=model_opt.dropout).to(device)
 
+    replace_with_pruned(model, "transformer", opt.prune_attention)
+    
     model.load_state_dict(checkpoint['model'])
     print('[Info] Trained model state loaded.')
     return model 
@@ -54,7 +59,8 @@ def main():
     parser.add_argument('-beam_size', type=int, default=5)
     parser.add_argument('-max_seq_len', type=int, default=100)
     parser.add_argument('-no_cuda', action='store_true')
-
+    parser.add_argument('-prune_attention', action='store_true')
+    
     # TODO: Translate bpe encoded files 
     #parser.add_argument('-src', required=True,
     #                    help='Source sequence to decode (one line per sequence)')
@@ -89,6 +95,8 @@ def main():
         trg_bos_idx=opt.trg_bos_idx,
         trg_eos_idx=opt.trg_eos_idx).to(device)
 
+    summary(translator)
+    
     unk_idx = SRC.vocab.stoi[SRC.unk_token]
     with open(opt.output, 'w') as f:
         for example in tqdm(test_loader, mininterval=2, desc='  - (Test)', leave=False):

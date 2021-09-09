@@ -18,8 +18,12 @@ from torchtext.data import Field, Dataset, BucketIterator
 from torchtext.datasets import TranslationDataset
 
 import transformer.Constants as Constants
+from CSP.prune import prune
+from CSP.pruned_layers import *
+from CSP.summary import summary
 from transformer.Models import Transformer
 from transformer.Optim import ScheduledOptim
+from transformer.SubLayers import MultiHeadAttention
 
 __author__ = "Yu-Hsiang Huang"
 
@@ -69,7 +73,7 @@ def patch_trg(trg, pad_idx):
     return trg, gold
 
 
-def train_epoch(model, training_data, optimizer, opt, device, smoothing):
+def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetune=False):
     ''' Epoch operation in training phase'''
 
     model.train()
@@ -88,8 +92,30 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing):
 
         # backward and update parameters
         loss, n_correct, n_word = cal_performance(
-            pred, gold, opt.trg_pad_idx, smoothing=smoothing) 
+            pred, gold, opt.trg_pad_idx, smoothing=smoothing)
+
+        # Add regularization loss
+        if not finetune:
+            loss = loss.view(1)
+            reg_loss = torch.zeros_like(loss).to('cuda')
+            for n, m in model.named_modules():
+                if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
+                    reg_loss += m.compute_group_lasso_v2()
+            
         loss.backward()
+
+        if finetune:
+                # before optimizer.step(), manipulate the gradient
+            """                                                                                                                                                                           
+            Zero the gradients of the pruned variables.                                                                                                                                   
+            """
+            for n, m in model.named_modules():
+                if isinstance(m, PrunedConv):
+                    m.conv.weight.grad = m.conv.weight.grad.float() * m.mask.float()
+                if isinstance(m, PrunedLinear):
+                    m.linear.weight.grad = m.linear.weight.grad.float() * m.mask.float()
+                    #print(m.mask.float())
+                    
         optimizer.step_and_update_lr()
 
         # note keeping
@@ -131,7 +157,7 @@ def eval_epoch(model, validation_data, device, opt):
     return loss_per_word, accuracy
 
 
-def train(model, training_data, validation_data, optimizer, device, opt):
+def train(model, training_data, validation_data, optimizer, device, opt, finetune=False):
     ''' Start training '''
 
     # Use tensorboard to plot curves, e.g. perplexity, accuracy, learning rate
@@ -140,8 +166,15 @@ def train(model, training_data, validation_data, optimizer, device, opt):
         from torch.utils.tensorboard import SummaryWriter
         tb_writer = SummaryWriter(log_dir=os.path.join(opt.output_dir, 'tensorboard'))
 
-    log_train_file = os.path.join(opt.output_dir, 'train.log')
-    log_valid_file = os.path.join(opt.output_dir, 'valid.log')
+    if finetune:
+        tlogf = "finetune_train.log"
+        vlogf = "finetune_valid.log"
+    else:
+        tlogf = "train.log"
+        vlogf = "valid.log"
+        
+    log_train_file = os.path.join(opt.output_dir, tlogf)
+    log_valid_file = os.path.join(opt.output_dir, vlogf)
 
     print('[Info] Training performance will be written to file: {} and {}'.format(
         log_train_file, log_valid_file))
@@ -156,14 +189,19 @@ def train(model, training_data, validation_data, optimizer, device, opt):
                   header=f"({header})", ppl=ppl,
                   accu=100*accu, elapse=(time.time()-start_time)/60, lr=lr))
 
+    if finetune:
+        epoch = opt.epoch_ft
+    else:
+        epoch = opt.epoch
+        
     #valid_accus = []
     valid_losses = []
-    for epoch_i in range(opt.epoch):
+    for epoch_i in range(epoch):
         print('[ Epoch', epoch_i, ']')
 
         start = time.time()
         train_loss, train_accu = train_epoch(
-            model, training_data, optimizer, opt, device, smoothing=opt.label_smoothing)
+            model, training_data, optimizer, opt, device, smoothing=opt.label_smoothing, finetune=finetune)
         train_ppl = math.exp(min(train_loss, 100))
         # Current learning rate
         lr = optimizer._optimizer.param_groups[0]['lr']
@@ -179,10 +217,19 @@ def train(model, training_data, validation_data, optimizer, device, opt):
         checkpoint = {'epoch': epoch_i, 'settings': opt, 'model': model.state_dict()}
 
         if opt.save_mode == 'all':
-            model_name = 'model_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
-            torch.save(checkpoint, model_name)
+            if finetune:
+                model_name = 'finetune_model_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
+            else:
+                model_name = 'model_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
+            if finetune:
+                torch.save(checkpoint, os.path.join(model_name, "finetune.pt"))
+            else:
+                torch.save(checkpoint, model_name)
         elif opt.save_mode == 'best':
-            model_name = 'model.chkpt'
+            if finetune:
+                model_name = 'finetuned_model.chkpt'
+            else:
+                model_name = 'model.chkpt'
             if valid_loss <= min(valid_losses):
                 torch.save(checkpoint, os.path.join(opt.output_dir, model_name))
                 print('    - [Info] The checkpoint file has been updated.')
@@ -200,6 +247,34 @@ def train(model, training_data, validation_data, optimizer, device, opt):
             tb_writer.add_scalars('accuracy', {'train': train_accu*100, 'val': valid_accu*100}, epoch_i)
             tb_writer.add_scalar('learning_rate', lr, epoch_i)
 
+def replace_with_pruned(m, name, prune_attention=False):
+    #print(m)                                                                                                                                                                                 
+    print("{}, {}".format(name, str(type(m))))
+    if type(m) == PrunedConv or type(m) == PrunedLinear:
+        return
+
+    if (not prune_attention) and type(m) == MultiHeadAttention:
+        return
+    
+    # HACK: directly replace conv layers of downsamples
+    if name == "downsample":
+        m[0] = PrunedConv(m[0])
+
+    for attr_str in dir(m):
+        target_attr = getattr(m, attr_str)
+        if type(target_attr) == torch.nn.Conv2d:
+            print("Replaced CONV -- ERROR: not expected")
+            exit()
+            setattr(m, attr_str, PrunedConv(target_attr))
+        elif type(target_attr) == torch.nn.Linear:
+            print("Replaced Linear")
+            setattr(m, attr_str, PrunedLinear(target_attr))
+            #replace_with_pruned(m, name, prune_attention)
+        # ------------ TODO: REPLACE ATTENTION LAYERS HERE TOO ------------
+            
+    for n, ch in m.named_children():
+        replace_with_pruned(ch, n, prune_attention)
+            
 def main():
     ''' 
     Usage:
@@ -214,6 +289,7 @@ def main():
     parser.add_argument('-val_path', default=None)     # bpe encoded data
 
     parser.add_argument('-epoch', type=int, default=10)
+    parser.add_argument('-epoch_ft', type=int, default=10)
     parser.add_argument('-b', '--batch_size', type=int, default=2048)
 
     parser.add_argument('-d_model', type=int, default=512)
@@ -239,10 +315,20 @@ def main():
     parser.add_argument('-no_cuda', action='store_true')
     parser.add_argument('-label_smoothing', action='store_true')
 
+    # ED: CSP args
+    parser.add_argument('-prune_attention', action='store_true')
+    parser.add_argument('-spar-str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
+    parser.add_argument('-q', type=float, default=0, help='prune threshold, will default to prune-type\'s default if not specified')
+    parser.add_argument('-finetune', action='store_true')
+    parser.add_argument('-cont', action='store_true', help='continue training from checkpoint')
+    parser.add_argument('-model', type=str, help='path to pretrained model')
+    
     opt = parser.parse_args()
     opt.cuda = not opt.no_cuda
     opt.d_word_vec = opt.d_model
 
+    assert opt.q > 0
+    
     # https://pytorch.org/docs/stable/notes/randomness.html
     # For reproducibility
     if opt.seed is not None:
@@ -295,13 +381,37 @@ def main():
         dropout=opt.dropout,
         scale_emb_or_prj=opt.scale_emb_or_prj).to(device)
 
+    # ED: replace linear layers with CSP modules                                                                                                                                          
+    replace_with_pruned(transformer, "transformer", opt.prune_attention)
+    for layer in transformer.named_modules():
+        print(layer)
+    
     optimizer = ScheduledOptim(
         optim.Adam(transformer.parameters(), betas=(0.9, 0.98), eps=1e-09),
         opt.lr_mul, opt.d_model, opt.n_warmup_steps)
 
-    train(transformer, training_data, validation_data, optimizer, device, opt)
+    if not opt.finetune:
+        if opt.cont:
+            assert (opt.model != None and opt.model != "")
+            checkpoint = torch.load(opt.model, map_location=device)
+            transformer.load_state_dict(checkpoint['model'])
+        # First train
+        train(transformer, training_data, validation_data, optimizer, device, opt, finetune=False)
 
-
+    assert (opt.model != None and opt.model != "")
+    checkpoint = torch.load(opt.model, map_location=device)
+    transformer.load_state_dict(checkpoint['model'])
+    
+    print('--- Before pruning ---')
+    summary(transformer)
+    # Prune
+    prune(transformer, method='cascade', q=opt.q)
+    print('--- After pruning ---')
+    summary(transformer)
+    # Finetune
+    train(transformer, training_data, validation_data, optimizer, device, opt, finetune=True)
+    summary(transformer)
+    
 def prepare_dataloaders_from_bpe_files(opt, device):
     batch_size = opt.batch_size
     MIN_FREQ = 2

@@ -1,0 +1,3 @@
+python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/run1/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e-2 -model output/run1/model.chkpt -q 0.75
+
+python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/pruned_attention/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e-2 -prune_attention -model output/pruned_attention/model.chkpt -q 0.75

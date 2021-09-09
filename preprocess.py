@@ -267,8 +267,13 @@ def main_wo_bpe():
     assert not any([opt.data_src, opt.data_trg]) or all([opt.data_src, opt.data_trg])
     print(opt)
 
-    src_lang_model = spacy.load(opt.lang_src)
-    trg_lang_model = spacy.load(opt.lang_trg)
+    if opt.lang_src == "de":
+        lang_src = "de_core_news_sm"
+    if opt.lang_trg == "en":
+        lang_trg = "en_core_web_sm"
+        
+    src_lang_model = spacy.load(lang_src)
+    trg_lang_model = spacy.load(lang_trg)
 
     def tokenize_src(text):
         return [tok.text for tok in src_lang_model.tokenizer(text)]
