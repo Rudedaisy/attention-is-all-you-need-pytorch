@@ -232,7 +232,7 @@ class PrunedLinear(nn.Module):
             l2_norm = l2_norm *	((n_chunks - chunk_idx) / (n_chunks*(n_chunks+1)/2))
             chunk_loss = torch.sum(torch.abs(l2_norm))
             layer_loss += chunk_loss
-
+            
         return layer_loss
     
     # cascading bounded sparsity - attempt 1

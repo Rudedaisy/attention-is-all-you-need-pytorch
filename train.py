@@ -101,6 +101,9 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetun
             for n, m in model.named_modules():
                 if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
                     reg_loss += m.compute_group_lasso_v2()
+            #print("old loss: {}".format(loss))
+            loss += reg_loss * opt.spar_str
+            #print("new loss: {}".format(loss))
             
         loss.backward()
 
@@ -318,7 +321,7 @@ def main():
     # ED: CSP args
     parser.add_argument('-prune_attention', action='store_true')
     parser.add_argument('-spar-str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
-    parser.add_argument('-q', type=float, default=0, help='prune threshold, will default to prune-type\'s default if not specified')
+    parser.add_argument('-q', type=float, default=0.75, help='prune threshold, will default to prune-type\'s default if not specified')
     parser.add_argument('-finetune', action='store_true')
     parser.add_argument('-cont', action='store_true', help='continue training from checkpoint')
     parser.add_argument('-model', type=str, help='path to pretrained model')
