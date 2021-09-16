@@ -95,7 +95,7 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetun
             pred, gold, opt.trg_pad_idx, smoothing=smoothing)
 
         # Add regularization loss
-        if not finetune:
+        if not finetune and opt.spar_str != 0:
             loss = loss.view(1)
             reg_loss = torch.zeros_like(loss).to('cuda')
             for n, m in model.named_modules():
@@ -330,8 +330,6 @@ def main():
     opt.cuda = not opt.no_cuda
     opt.d_word_vec = opt.d_model
 
-    assert opt.q > 0
-    
     # https://pytorch.org/docs/stable/notes/randomness.html
     # For reproducibility
     if opt.seed is not None:
@@ -393,6 +391,10 @@ def main():
         optim.Adam(transformer.parameters(), betas=(0.9, 0.98), eps=1e-09),
         opt.lr_mul, opt.d_model, opt.n_warmup_steps)
 
+    if opt.model != "" and opt.model != None:
+        checkpoint = torch.load(opt.model, map_location=device)
+        transformer.load_state_dict(checkpoint['model'])
+    
     if not opt.finetune:
         if opt.cont:
             assert (opt.model != None and opt.model != "")
@@ -400,17 +402,19 @@ def main():
             transformer.load_state_dict(checkpoint['model'])
         # First train
         train(transformer, training_data, validation_data, optimizer, device, opt, finetune=False)
+        print('--- Before pruning ---')
+        summary(transformer)
+        exit()
 
     assert (opt.model != None and opt.model != "")
-    checkpoint = torch.load(opt.model, map_location=device)
-    transformer.load_state_dict(checkpoint['model'])
     
     print('--- Before pruning ---')
     summary(transformer)
-    # Prune
-    prune(transformer, method='cascade', q=opt.q)
-    print('--- After pruning ---')
-    summary(transformer)
+    if opt.q != 0:
+        # Prune
+        prune(transformer, method='cascade', q=opt.q)
+        print('--- After pruning ---')
+        summary(transformer)
     # Finetune
     train(transformer, training_data, validation_data, optimizer, device, opt, finetune=True)
     summary(transformer)

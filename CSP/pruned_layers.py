@@ -216,7 +216,7 @@ class PrunedLinear(nn.Module):
         return layer_loss
 
     # original CSP unoptimized
-    def compute_group_lasso_v2(self, chunk_size = 32, device=None):
+    def compute_group_lasso_v2_backup(self, chunk_size = 32, device=None):
         layer_loss = torch.zeros(1).cuda()
         
         last_chunk =  self.out_features % chunk_size
@@ -236,7 +236,7 @@ class PrunedLinear(nn.Module):
         return layer_loss
     
     # cascading bounded sparsity - attempt 1
-    def compute_group_lasso_v2_backup(self, chunk_size = 32, device=None):        
+    def compute_group_lasso_v2(self, chunk_size = 32, device=None):        
         last_chunk =  self.out_features % chunk_size
         n_chunks = self.out_features // chunk_size + (last_chunk != 0)
         
