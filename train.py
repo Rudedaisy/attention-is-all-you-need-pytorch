@@ -107,7 +107,7 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetun
             
         loss.backward()
 
-        if finetune:
+        if finetune and opt.q != 0:
                 # before optimizer.step(), manipulate the gradient
             """                                                                                                                                                                           
             Zero the gradients of the pruned variables.                                                                                                                                   
@@ -250,33 +250,33 @@ def train(model, training_data, validation_data, optimizer, device, opt, finetun
             tb_writer.add_scalars('accuracy', {'train': train_accu*100, 'val': valid_accu*100}, epoch_i)
             tb_writer.add_scalar('learning_rate', lr, epoch_i)
 
-def replace_with_pruned(m, name, prune_attention=False):
+def replace_with_pruned(m, name, prune_attention=False, prune_only_attention=False):
     #print(m)                                                                                                                                                                                 
     print("{}, {}".format(name, str(type(m))))
     if type(m) == PrunedConv or type(m) == PrunedLinear:
         return
-
-    if (not prune_attention) and type(m) == MultiHeadAttention:
+    if not (prune_attention or prune_only_attention) and type(m) == MultiHeadAttention:
         return
-    
+
     # HACK: directly replace conv layers of downsamples
     if name == "downsample":
         m[0] = PrunedConv(m[0])
 
-    for attr_str in dir(m):
-        target_attr = getattr(m, attr_str)
-        if type(target_attr) == torch.nn.Conv2d:
-            print("Replaced CONV -- ERROR: not expected")
-            exit()
-            setattr(m, attr_str, PrunedConv(target_attr))
-        elif type(target_attr) == torch.nn.Linear:
-            print("Replaced Linear")
-            setattr(m, attr_str, PrunedLinear(target_attr))
-            #replace_with_pruned(m, name, prune_attention)
+    if not prune_only_attention or type(m) == MultiHeadAttention:
+        for attr_str in dir(m):
+            target_attr = getattr(m, attr_str)
+            if type(target_attr) == torch.nn.Conv2d:
+                print("Replaced CONV -- ERROR: not expected")
+                exit()
+                setattr(m, attr_str, PrunedConv(target_attr))
+            elif type(target_attr) == torch.nn.Linear:
+                print("Replaced Linear")
+                setattr(m, attr_str, PrunedLinear(target_attr))
+                #replace_with_pruned(m, name, prune_attention)
         # ------------ TODO: REPLACE ATTENTION LAYERS HERE TOO ------------
             
     for n, ch in m.named_children():
-        replace_with_pruned(ch, n, prune_attention)
+        replace_with_pruned(ch, n, prune_attention, prune_only_attention)
             
 def main():
     ''' 
@@ -320,6 +320,7 @@ def main():
 
     # ED: CSP args
     parser.add_argument('-prune_attention', action='store_true')
+    parser.add_argument('-prune_only_attention', action='store_true')
     parser.add_argument('-spar-str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
     parser.add_argument('-q', type=float, default=0.75, help='prune threshold, will default to prune-type\'s default if not specified')
     parser.add_argument('-finetune', action='store_true')
@@ -383,7 +384,7 @@ def main():
         scale_emb_or_prj=opt.scale_emb_or_prj).to(device)
 
     # ED: replace linear layers with CSP modules                                                                                                                                          
-    replace_with_pruned(transformer, "transformer", opt.prune_attention)
+    replace_with_pruned(transformer, "transformer", opt.prune_attention, opt.prune_only_attention)
     for layer in transformer.named_modules():
         print(layer)
     

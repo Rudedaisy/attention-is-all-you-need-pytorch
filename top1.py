@@ -1,5 +1,7 @@
-#path = "output/run1/valid.log"
-path = "output/pruned_attention/valid.log"
+#path = "output/run2/finetune_valid.log"
+#path = "output/pruned_attention2/finetune_valid.log"
+#path = "output/golden/finetune_valid.log"
+path = "output/prune_only_attention/finetune_valid.log"
 
 first = True
 top1 = 0
