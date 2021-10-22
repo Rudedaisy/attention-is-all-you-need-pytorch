@@ -40,36 +40,11 @@ def load_model(opt, device):
         n_head=model_opt.n_head,
         dropout=model_opt.dropout).to(device)
 
-    replace_with_pruned(model, "transformer", opt.prune_attention)
+    replace_with_pruned(model, "transformer", opt.prune_attention, opt.prune_only_attention)
     
     model.load_state_dict(checkpoint['model'])
     print('[Info] Trained model state loaded.')
     return model 
-
-def replace_with_pruned(m, name, prune_attention=False, prune_only_attention=False):
-    print("{}, {}".format(name, str(type(m))))
-    if type(m) == PrunedConv or type(m) == PrunedLinear:
-        return
-    if not (prune_attention or prune_only_attention) and type(m) == MultiHeadAttention:
-        return
-
-    # HACK: directly replace conv layers of downsamples
-    if name == "downsample":
-        m[0] = PrunedConv(m[0])
-
-    if not prune_only_attention or type(m) == MultiHeadAttention:
-        for attr_str in dir(m):
-            target_attr = getattr(m, attr_str)
-            if type(target_attr) == torch.nn.Conv2d:
-                print("Replaced CONV -- ERROR: not expected")
-                exit()
-                setattr(m, attr_str, PrunedConv(target_attr))
-            elif type(target_attr) == torch.nn.Linear:
-                print("Replaced Linear")
-                setattr(m, attr_str, PrunedLinear(target_attr))
-
-    for n, ch in m.named_children():
-        replace_with_pruned(ch, n, prune_attention, prune_only_attention)
 
 def main():
     '''Main Function'''
@@ -123,9 +98,6 @@ def main():
         trg_bos_idx=opt.trg_bos_idx,
         trg_eos_idx=opt.trg_eos_idx).to(device)
 
-    # ED: replace linear layers with CSP modules
-    replace_with_pruned(translator, "translator", opt.prune_attention, opt.prune_only_attention)
-    
     summary(translator)
 
     references = []
@@ -147,8 +119,8 @@ def main():
             references.append([src_line.strip().split()])
             candidates.append(pred_line.strip().split())
 
-            print(references)
-            print(candidates)
+            #print(references[-1])
+            #print(candidates[-1])
             
             f.write(pred_line.strip() + '\n')
 
