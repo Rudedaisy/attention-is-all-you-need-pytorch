@@ -14,6 +14,9 @@ from CSP.prune import prune
 from CSP.pruned_layers import *
 from train import replace_with_pruned
 
+# BLEU score
+from nltk.translate.bleu_score import corpus_bleu
+
 def load_model(opt, device):
 
     checkpoint = torch.load(opt.model, map_location=device)
@@ -43,6 +46,30 @@ def load_model(opt, device):
     print('[Info] Trained model state loaded.')
     return model 
 
+def replace_with_pruned(m, name, prune_attention=False, prune_only_attention=False):
+    print("{}, {}".format(name, str(type(m))))
+    if type(m) == PrunedConv or type(m) == PrunedLinear:
+        return
+    if not (prune_attention or prune_only_attention) and type(m) == MultiHeadAttention:
+        return
+
+    # HACK: directly replace conv layers of downsamples
+    if name == "downsample":
+        m[0] = PrunedConv(m[0])
+
+    if not prune_only_attention or type(m) == MultiHeadAttention:
+        for attr_str in dir(m):
+            target_attr = getattr(m, attr_str)
+            if type(target_attr) == torch.nn.Conv2d:
+                print("Replaced CONV -- ERROR: not expected")
+                exit()
+                setattr(m, attr_str, PrunedConv(target_attr))
+            elif type(target_attr) == torch.nn.Linear:
+                print("Replaced Linear")
+                setattr(m, attr_str, PrunedLinear(target_attr))
+
+    for n, ch in m.named_children():
+        replace_with_pruned(ch, n, prune_attention, prune_only_attention)
 
 def main():
     '''Main Function'''
@@ -60,6 +87,7 @@ def main():
     parser.add_argument('-max_seq_len', type=int, default=100)
     parser.add_argument('-no_cuda', action='store_true')
     parser.add_argument('-prune_attention', action='store_true')
+    parser.add_argument('-prune_only_attention', action='store_true')
     
     # TODO: Translate bpe encoded files 
     #parser.add_argument('-src', required=True,
@@ -95,20 +123,39 @@ def main():
         trg_bos_idx=opt.trg_bos_idx,
         trg_eos_idx=opt.trg_eos_idx).to(device)
 
+    # ED: replace linear layers with CSP modules
+    replace_with_pruned(translator, "translator", opt.prune_attention, opt.prune_only_attention)
+    
     summary(translator)
+
+    references = []
+    candidates = []
     
     unk_idx = SRC.vocab.stoi[SRC.unk_token]
     with open(opt.output, 'w') as f:
         for example in tqdm(test_loader, mininterval=2, desc='  - (Test)', leave=False):
             #print(' '.join(example.src))
             src_seq = [SRC.vocab.stoi.get(word, unk_idx) for word in example.src]
+            ref_seq = [TRG.vocab.stoi.get(word, unk_idx) for word in example.trg]
+            src_line = ' '.join(TRG.vocab.itos[idx] for idx in ref_seq)
+            src_line = src_line.replace(Constants.BOS_WORD, '').replace(Constants.EOS_WORD, '')
             pred_seq = translator.translate_sentence(torch.LongTensor([src_seq]).to(device))
             pred_line = ' '.join(TRG.vocab.itos[idx] for idx in pred_seq)
             pred_line = pred_line.replace(Constants.BOS_WORD, '').replace(Constants.EOS_WORD, '')
             #print(pred_line)
+
+            references.append([src_line.strip().split()])
+            candidates.append(pred_line.strip().split())
+
+            print(references)
+            print(candidates)
+            
             f.write(pred_line.strip() + '\n')
 
     print('[Info] Finished.')
+
+    score = corpus_bleu(references, candidates)
+    print(score)
 
 if __name__ == "__main__":
     '''
