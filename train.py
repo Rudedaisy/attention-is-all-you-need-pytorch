@@ -98,9 +98,17 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetun
         if not finetune and opt.spar_str != 0:
             loss = loss.view(1)
             reg_loss = torch.zeros_like(loss).to('cuda')
-            for n, m in model.named_modules():
-                if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
-                    reg_loss += m.compute_group_lasso_v2()
+            if opt.spar_met == "CSP":
+                for n, m in model.named_modules():
+                    if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
+                        reg_loss += m.compute_group_lasso_v2()
+            elif opt.spar_met == "SSL":
+                for n, m in model.named_modules():
+                    if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
+                        reg_loss += m.compute_SSL()
+            else:
+                print("ERROR: regularization method not supported")
+                exit(1)
             #print("old loss: {}".format(loss))
             loss += reg_loss * opt.spar_str
             #print("new loss: {}".format(loss))
@@ -321,6 +329,7 @@ def main():
     # ED: CSP args
     parser.add_argument('-prune_attention', action='store_true')
     parser.add_argument('-prune_only_attention', action='store_true')
+    parser.add_argument('-spar-met', type=str, default="CSP", help='Regularization method, options:[CSP, SSL]')
     parser.add_argument('-spar-str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
     parser.add_argument('-q', type=float, default=0.75, help='prune threshold, will default to prune-type\'s default if not specified')
     parser.add_argument('-finetune', action='store_true')
@@ -413,7 +422,7 @@ def main():
     summary(transformer)
     if opt.q != 0:
         # Prune
-        prune(transformer, method='cascade', q=opt.q)
+        prune(transformer, method=opt.spar_met, q=opt.q)
         print('--- After pruning ---')
         summary(transformer)
     # Finetune

@@ -19,6 +19,7 @@ class PrunedLinear(nn.Module):
         n = self.out_features
         self.sparsity = 1.0
         self.finetune = False
+        self.extracted = False
         # Initailization
         #self.linear.weight.data.normal_(0, math.sqrt(2. / (m+n)))
         
@@ -178,14 +179,29 @@ class PrunedLinear(nn.Module):
         """
         pass
         
-    def prune_SSL(self, q):
+    def prune_SSL(self, q, dim=None):
         linear_mat = self.linear.weight.data
         mask = torch.full(linear_mat.shape, True, dtype=bool).cuda()
         cutoff = torch.std(linear_mat)*q
         
-        l1_norm = torch.sum(torch.abs(linear_mat), dim=0) / self.out_features
-        next_mask = (l1_norm > cutoff).repeat(self.out_features, 1)
-        mask = torch.logical_and(mask, next_mask)
+        l1_norm = torch.sum(torch.abs(linear_mat), dim=dim) / self.out_features
+
+        if dim==0:
+            next_mask = (l1_norm > cutoff).repeat(self.out_features, 1)
+        elif dim==1:
+            next_mask = (l1_norm > cutoff).repeat(self.in_features, 1)
+            next_mask = next_mask.reshape(mask.shape)
+        else:
+            next_mask = l1_norm > cutoff
+
+        try:
+            mask = torch.logical_and(mask, next_mask)
+        except:
+            print(linear_mat.shape)
+            print(l1_norm.shape)
+            print(next_mask.shape)
+            print(mask.shape)
+            exit(1)
         
         self.mask = mask
         # prune the weights
@@ -269,11 +285,11 @@ class PrunedLinear(nn.Module):
 
         return torch.sum(layer_loss * scaling_factor)
 
-    def compute_SSL(self):
+    def compute_SSL(self, dim=1):
         layer_loss = torch.zeros(1).cuda()
         
         conv_mat = self.linear.weight.view((self.out_features, -1))
-        l2_norm = torch.sqrt(torch.sum(conv_mat ** 2, dim=0) / self.out_features)
+        l2_norm = torch.sqrt(torch.sum(conv_mat ** 2, dim=dim) / self.out_features)
         layer_loss += torch.sum(torch.abs(l2_norm))
         
         return layer_loss
@@ -291,6 +307,7 @@ class PrunedConv(nn.Module):
         self.bias = conv2d_module.bias
         self.conv = conv2d_module
         self.finetune = False
+        self.extracted = False
         #self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=bias, dilation=dilation)
 
         # Expand and Transpose to match the dimension
@@ -493,12 +510,12 @@ class PrunedConv(nn.Module):
         # calculate the sparsity
         self.sparsity = self.conv.weight.data.numel() - self.conv.weight.data.nonzero().size(0)
 
-    def prune_SSL(self, q = 0.75):
+    def prune_SSL(self, q = 0.75, dim=1):
         conv_mat = self.conv.weight.data
         mask = torch.full(conv_mat.shape, True, dtype=bool).cuda()
         cutoff = torch.std(conv_mat)*q
 
-        l1_norm = torch.sum(torch.abs(conv_mat), dim=0) / self.out_channels
+        l1_norm = torch.sum(torch.abs(conv_mat), dim=dim) / self.out_channels
         next_mask = (l1_norm > cutoff).repeat(self.out_channels, 1, 1, 1)
         mask = torch.logical_and(mask, next_mask)
 
@@ -597,11 +614,11 @@ class PrunedConv(nn.Module):
 
         return torch.sum(layer_loss * scaling_factor)
 
-    def compute_SSL(self):
+    def compute_SSL(self, dim=1):
         layer_loss = torch.zeros(1).cuda()
 
         conv_mat = self.conv.weight.view((self.out_channels, -1))
-        l2_norm = torch.sqrt(torch.sum(conv_mat ** 2, dim=0) / self.out_channels)
+        l2_norm = torch.sqrt(torch.sum(conv_mat ** 2, dim=1) / self.out_channels)
         layer_loss += torch.sum(torch.abs(l2_norm))
 
         return layer_loss

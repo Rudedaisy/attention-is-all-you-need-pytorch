@@ -5,3 +5,5 @@ python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weigh
 python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/run2/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e0; python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/run2/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e0 -finetune -model output/run2/model.chkpt -q 0.75
 
 python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/pruned_only_attention/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e0 -pruned_only_attention; python train.py -data_pkl m30k_deen_shr.pkl -embs_share_weight -proj_share_weight -label_smoothing -output_dir output/pruned_only_attention/ -b 256 -warmup 128000 -epoch 400 -epoch_ft 100 -spar-str 1e0 -pruned_only_attention -finetune -model output/pruned_only_attention/model.chkpt -q 0.75
+
+python translate.py -data_pkl m30k_deen_shr.pkl -model output/pruned_attention_SSL_flat/finetuned_model.chkpt -output prediction.txt -prune_attention

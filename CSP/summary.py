@@ -63,4 +63,3 @@ def summary(net):
     print("Total parameters: %d" %num_total_params)
     total_sparisty = 1. - (num_total_nonzero_params / num_total_params)
     print("Total sparsity: %f" %total_sparisty)
-

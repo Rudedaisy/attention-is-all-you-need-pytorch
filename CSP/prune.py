@@ -21,7 +21,7 @@ def prune(net, method='cascade', q=5.0):
                 m.prune_structured_interfilter(q) ########## WORKING ON IT
             elif method == 'chunk':
                 m.prune_chunk(q=q)
-            elif method == 'cascade':
+            elif method == 'CSP':
                 m.prune_cascade_l1(q=q)
                 #m.prune_filter_chunk(q=q) ##### not a good idea to do 2-stage prune naively
             elif method == 'SSL':

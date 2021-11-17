@@ -40,11 +40,51 @@ def load_model(opt, device):
         n_head=model_opt.n_head,
         dropout=model_opt.dropout).to(device)
 
-    replace_with_pruned(model, "transformer", opt.prune_attention, opt.prune_only_attention)
-    
+    replace_with_pruned(model, "model", opt.prune_attention, opt.prune_only_attention)
+
     model.load_state_dict(checkpoint['model'])
     print('[Info] Trained model state loaded.')
     return model 
+
+def create_model(model='/root/hostCurUser/attention-is-all-you-need-pytorch/output/pruned_attention/finetuned_model.chkpt', data_pkl='/root/hostCurUser/attention-is-all-you-need-pytorch/m30k_deen_shr.pkl', beam_size=5, max_seq_len=100, prune_attention=True, prune_only_attention=False, cuda=True):
+    parser = argparse.ArgumentParser(description='translate.py')
+
+    parser.add_argument('-model', type=str, default=model,
+                        help='Path to model weight file')
+    parser.add_argument('-data_pkl', type=str, default=data_pkl,
+                        help='Pickle file with both instances and vocabulary.')
+    parser.add_argument('-output', type=str, default='pred.txt',
+                        help="""Path to output the predictions (each line will be the decoded sequence""")
+    parser.add_argument('-beam_size', type=int, default=beam_size)
+    parser.add_argument('-max_seq_len', type=int, default=max_seq_len)
+    parser.add_argument('-no_cuda', action='store_true')
+    parser.add_argument('-prune_attention', action='store_true')
+    parser.add_argument('-prune_only_attention', action='store_true')
+
+    opt = parser.parse_args()
+    opt.cuda = cuda
+    opt.prune_attention=prune_attention
+    opt.prune_only_attention=prune_only_attention
+
+    data = pickle.load(open(opt.data_pkl, 'rb'))
+    SRC, TRG = data['vocab']['src'], data['vocab']['trg']
+    opt.src_pad_idx = SRC.vocab.stoi[Constants.PAD_WORD]
+    opt.trg_pad_idx = TRG.vocab.stoi[Constants.PAD_WORD]
+    opt.trg_bos_idx = TRG.vocab.stoi[Constants.BOS_WORD]
+    opt.trg_eos_idx = TRG.vocab.stoi[Constants.EOS_WORD]
+
+    test_loader = Dataset(examples=data['test'], fields={'src': SRC, 'trg': TRG})
+
+    device = torch.device('cuda' if opt.cuda else 'cpu')
+    translator = Translator(
+        model=load_model(opt, device),
+        beam_size=opt.beam_size,
+        max_seq_len=opt.max_seq_len,
+        src_pad_idx=opt.src_pad_idx,
+        trg_pad_idx=opt.trg_pad_idx,
+        trg_bos_idx=opt.trg_bos_idx,
+        trg_eos_idx=opt.trg_eos_idx)
+    return translator
 
 def main():
     '''Main Function'''
