@@ -101,7 +101,7 @@ def train_epoch(model, training_data, optimizer, opt, device, smoothing, finetun
             if opt.spar_met == "CSP":
                 for n, m in model.named_modules():
                     if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
-                        reg_loss += m.compute_group_lasso_v2()
+                        reg_loss += m.compute_group_lasso_v2(opt.chunk_size)
             elif opt.spar_met == "SSL":
                 for n, m in model.named_modules():
                     if isinstance(m, PrunedConv) or isinstance(m, PrunedLinear):
@@ -329,12 +329,13 @@ def main():
     # ED: CSP args
     parser.add_argument('-prune_attention', action='store_true')
     parser.add_argument('-prune_only_attention', action='store_true')
-    parser.add_argument('-spar-met', type=str, default="CSP", help='Regularization method, options:[CSP, SSL]')
-    parser.add_argument('-spar-str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
+    parser.add_argument('-spar_met', type=str, default="CSP", help='Regularization method, options:[CSP, SSL]')
+    parser.add_argument('-spar_str', type=float, default=1e-4, help='sparsity reg strength, default=1e-4')
     parser.add_argument('-q', type=float, default=0.75, help='prune threshold, will default to prune-type\'s default if not specified')
     parser.add_argument('-finetune', action='store_true')
     parser.add_argument('-cont', action='store_true', help='continue training from checkpoint')
     parser.add_argument('-model', type=str, help='path to pretrained model')
+    parser.add_argument('-chunk_size', type=int, default=32, help='chunk size for any fine-grained structured pruning method')
     
     opt = parser.parse_args()
     opt.cuda = not opt.no_cuda
@@ -422,7 +423,7 @@ def main():
     summary(transformer)
     if opt.q != 0:
         # Prune
-        prune(transformer, method=opt.spar_met, q=opt.q)
+        prune(transformer, method=opt.spar_met, q=opt.q, chunk_size=opt.chunk_size)
         print('--- After pruning ---')
         summary(transformer)
     # Finetune

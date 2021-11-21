@@ -4,7 +4,7 @@ from CSP.pruned_layers import *
 import torch.nn as nn
 
 
-def prune(net, method='cascade', q=5.0):
+def prune(net, method='cascade', q=5.0, chunk_size=32):
     # Before the training started, generate the mask
     assert isinstance(net, nn.Module)
     for n, m in net.named_modules():
@@ -22,7 +22,7 @@ def prune(net, method='cascade', q=5.0):
             elif method == 'chunk':
                 m.prune_chunk(q=q)
             elif method == 'CSP':
-                m.prune_cascade_l1(q=q)
+                m.prune_cascade_l1(chunk_size=chunk_size, q=q)
                 #m.prune_filter_chunk(q=q) ##### not a good idea to do 2-stage prune naively
             elif method == 'SSL':
                 m.prune_SSL(q)
