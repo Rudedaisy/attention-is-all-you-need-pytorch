@@ -1,0 +1,450 @@
+model, <class 'transformer.Models.Transformer'>
+Replaced Linear
+encoder, <class 'transformer.Models.Encoder'>
+src_word_emb, <class 'torch.nn.modules.sparse.Embedding'>
+position_enc, <class 'transformer.Models.PositionalEncoding'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_stack, <class 'torch.nn.modules.container.ModuleList'>
+0, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+1, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+2, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+3, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+4, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+5, <class 'transformer.Layers.EncoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+decoder, <class 'transformer.Models.Decoder'>
+trg_word_emb, <class 'torch.nn.modules.sparse.Embedding'>
+position_enc, <class 'transformer.Models.PositionalEncoding'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_stack, <class 'torch.nn.modules.container.ModuleList'>
+0, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+1, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+2, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+3, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+4, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+5, <class 'transformer.Layers.DecoderLayer'>
+slf_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+enc_attn, <class 'transformer.SubLayers.MultiHeadAttention'>
+Replaced Linear
+Replaced Linear
+Replaced Linear
+Replaced Linear
+w_qs, <class 'CSP.pruned_layers.PrunedLinear'>
+w_ks, <class 'CSP.pruned_layers.PrunedLinear'>
+w_vs, <class 'CSP.pruned_layers.PrunedLinear'>
+fc, <class 'CSP.pruned_layers.PrunedLinear'>
+attention, <class 'transformer.Modules.ScaledDotProductAttention'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+pos_ffn, <class 'transformer.SubLayers.PositionwiseFeedForward'>
+Replaced Linear
+Replaced Linear
+w_1, <class 'CSP.pruned_layers.PrunedLinear'>
+w_2, <class 'CSP.pruned_layers.PrunedLinear'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+dropout, <class 'torch.nn.modules.dropout.Dropout'>
+layer_norm, <class 'torch.nn.modules.normalization.LayerNorm'>
+trg_word_prj, <class 'CSP.pruned_layers.PrunedLinear'>
+[Info] Trained model state loaded.
+Layer id	Type		Parameter	Non-zero parameter	Sparsity(\%)
+1		PLinear		262144		222080			0.152832
+2		PLinear		262144		219904			0.161133
+3		PLinear		262144		15488			0.940918
+4		PLinear		262144		1536			0.994141
+5		PLinear		1048576		20480			0.980469
+6		PLinear		1048576		3072			0.997070
+7		PLinear		262144		222720			0.150391
+8		PLinear		262144		222592			0.150879
+9		PLinear		262144		210688			0.196289
+10		PLinear		262144		189056			0.278809
+11		PLinear		1048576		9216			0.991211
+12		PLinear		1048576		1024			0.999023
+13		PLinear		262144		221184			0.156250
+14		PLinear		262144		222848			0.149902
+15		PLinear		262144		167936			0.359375
+16		PLinear		262144		154752			0.409668
+17		PLinear		1048576		1008896			0.037842
+18		PLinear		1048576		895744			0.145752
+19		PLinear		262144		223104			0.148926
+20		PLinear		262144		224000			0.145508
+21		PLinear		262144		50560			0.807129
+22		PLinear		262144		86656			0.669434
+23		PLinear		1048576		1010304			0.036499
+24		PLinear		1048576		895744			0.145752
+25		PLinear		262144		222592			0.150879
+26		PLinear		262144		222720			0.150391
+27		PLinear		262144		222208			0.152344
+28		PLinear		262144		222336			0.151855
+29		PLinear		1048576		988160			0.057617
+30		PLinear		1048576		863488			0.176514
+31		PLinear		262144		223488			0.147461
+32		PLinear		262144		222720			0.150391
+33		PLinear		262144		222464			0.151367
+34		PLinear		262144		224640			0.143066
+35		PLinear		1048576		949760			0.094238
+36		PLinear		1048576		786304			0.250122
+37		PLinear		262144		223232			0.148438
+38		PLinear		262144		224384			0.144043
+39		PLinear		262144		178688			0.318359
+40		PLinear		262144		122112			0.534180
+41		PLinear		262144		45696			0.825684
+42		PLinear		262144		39808			0.848145
+43		PLinear		262144		20352			0.922363
+44		PLinear		262144		44672			0.829590
+45		PLinear		1048576		63232			0.939697
+46		PLinear		1048576		41728			0.960205
+47		PLinear		262144		41088			0.843262
+48		PLinear		262144		48768			0.813965
+49		PLinear		262144		6016			0.977051
+50		PLinear		262144		5504			0.979004
+51		PLinear		262144		48640			0.814453
+52		PLinear		262144		41088			0.843262
+53		PLinear		262144		20096			0.923340
+54		PLinear		262144		30336			0.884277
+55		PLinear		1048576		61696			0.941162
+56		PLinear		1048576		21376			0.979614
+57		PLinear		262144		220416			0.159180
+58		PLinear		262144		220288			0.159668
+59		PLinear		262144		2816			0.989258
+60		PLinear		262144		1024			0.996094
+61		PLinear		262144		222336			0.151855
+62		PLinear		262144		221952			0.153320
+63		PLinear		262144		5888			0.977539
+64		PLinear		262144		3072			0.988281
+65		PLinear		1048576		54016			0.948486
+66		PLinear		1048576		12032			0.988525
+67		PLinear		262144		223488			0.147461
+68		PLinear		262144		222592			0.150879
+69		PLinear		262144		223104			0.148926
+70		PLinear		262144		224256			0.144531
+71		PLinear		262144		223744			0.146484
+72		PLinear		262144		223360			0.147949
+73		PLinear		262144		221952			0.153320
+74		PLinear		262144		225024			0.141602
+75		PLinear		1048576		32512			0.968994
+76		PLinear		1048576		7680			0.992676
+77		PLinear		262144		224640			0.143066
+78		PLinear		262144		222464			0.151367
+79		PLinear		262144		223872			0.145996
+80		PLinear		262144		224256			0.144531
+81		PLinear		262144		222720			0.150391
+82		PLinear		262144		221568			0.154785
+83		PLinear		262144		224384			0.144043
+84		PLinear		262144		221696			0.154297
+85		PLinear		1048576		64128			0.938843
+86		PLinear		1048576		15872			0.984863
+87		PLinear		262144		224640			0.143066
+88		PLinear		262144		222080			0.152832
+89		PLinear		262144		225280			0.140625
+90		PLinear		262144		222208			0.152344
+91		PLinear		262144		225408			0.140137
+92		PLinear		262144		222976			0.149414
+93		PLinear		262144		6400			0.975586
+94		PLinear		262144		3840			0.985352
+95		PLinear		1048576		65536			0.937500
+96		PLinear		1048576		36864			0.964844
+97		PLinear		4874752		2276096			0.533085
+PrunedLinear:totalLinear ratio = 1.0
+Total nonzero parameters: 21587456
+Total parameters: 48914944
+Total sparsity: 0.558674
+[Info] Finished.
+0.3011536004004865
